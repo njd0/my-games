@@ -54,7 +54,7 @@ export const Cell = ({ children, row, col }: Props) => {
   const isSelectedCell = useMemo(() => {
     if (!selectedCell) return false;
     return selectedCell.col === col && selectedCell.row === row;
-  }, [selectedCell])
+  }, [selectedCell, col, row])
 
   const contextValue: CellContextValue = {
     selectCell,
