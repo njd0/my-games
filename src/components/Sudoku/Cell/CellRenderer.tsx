@@ -2,6 +2,7 @@ import { useCallback, useContext } from "react";
 import { CellContext } from "./CellContext";
 import { BoardRender, EmptyCell } from "../config";
 import classNames from "classnames";
+import { Candidates } from "./Candidates";
 
 // TODO:why subtract subGrid Row and Col from top and left.
 // AND why - 3 from board size must be done together. else all breaks???
@@ -14,38 +15,6 @@ const getCellTransform = (row: number, col: number, size: number) => {
     width: size - 1,  // - 1 for outline w
     height: size - 1, // - 1 for outline w
   }
-}
-
-const Candidates = ({
-  candidates,
-}: {
-  candidates: { [key: string]: boolean };
-}) => {
-  const {
-    isSelectedCell,
-    selectCandidate,
-  } = useContext(CellContext);
-
-  const onSelectCandidate = useCallback((candidate: number) => {
-    selectCandidate(candidate);
-  }, [selectCandidate])
-
-  return (
-    <div className={classNames("grid grid-cols-3 w-full h-full", {
-      'pointer-events-none': !isSelectedCell
-    })}>
-      {Object.entries(candidates).map(([k, v]) => (
-        <div
-          key={k}
-          className={classNames("flex items-center justify-center text-sm", {
-            'opacity-1': v === true,
-            'opacity-0 transition-opacity duration-1000 ease-out hover:opacity-60': v === false,
-          })}
-          onClick={() => onSelectCandidate(Number(k))}
-        >{k}</div>
-      ))}
-    </div>
-  )
 }
 
 export const CellRenderer = () => {
@@ -71,7 +40,7 @@ export const CellRenderer = () => {
       onClick={onSelectCell}
     >
       {cell.value !== EmptyCell ?
-        <span>{cell.value}</span> :
+        <div className="flex w-full h-full justify-center items-center font-bold text-4xl">{cell.value}</div> :
         <Candidates candidates={cell.candidates} />
       }
       {/* color for pre-filled cell #e6e6e6 */}

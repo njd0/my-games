@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { CellRenderer } from "./Cell/CellRenderer";
 import { BoardRender, GenerateEmptyBoard } from "./config";
 import { Cell } from "./Cell/CellContext";
+import { useControls } from "./Controls/useControls";
 
 const board = GenerateEmptyBoard();
 
@@ -9,6 +10,8 @@ export const Sudoku = () => {
   const boardSize = useMemo(() => {
     return (9 * BoardRender.Cell.Desktop + (2 * BoardRender.Gap) - 3)
   }, []);
+
+  useControls();
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center mt-8">

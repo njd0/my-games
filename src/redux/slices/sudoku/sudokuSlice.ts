@@ -26,6 +26,14 @@ export const sudokuSlice = createSlice({
     setSelectCell: (state, action: PayloadAction<SelectedCell>) => {
       state.selectedCell = action.payload
     },
+    setCellValue: (state, action: PayloadAction<number>) => {
+      if (!state.selectedCell) return;
+
+      state.board[state.selectedCell.row][state.selectedCell.col] = {
+        ...state.board[state.selectedCell.row][state.selectedCell.col],
+        value: action.payload,
+      }
+    },
     setCellCandidate: (state, action: PayloadAction<number>) => {
       if (!state.selectedCell) return;
 
@@ -47,6 +55,7 @@ export const {
   setSelectDifficulty,
   setSelectCell,
   setCellCandidate,
+  setCellValue,
   resetBoard,
 } = sudokuSlice.actions;
 
