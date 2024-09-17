@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useCallback, useMemo } from 'react'
-import { useAppDispatch, useAppSelector } from '../../../redux/useHook'
+import { useAppDispatch, useAppSelector } from '@/redux/useHook'
 import {
   setSelectCell,
   setCellCandidate,
-} from '../../../redux/slices/sudoku/sudokuSlice';
-import { BoardCell, SelectedCell } from '../../../redux/slices/sudoku/types';
+} from '@/redux/slices/sudoku/sudokuSlice';
+import { BoardCell, SelectedCell } from '@/redux/slices/sudoku/types';
 import { EmptyCell } from '../config';
 
 interface CellContextValue {

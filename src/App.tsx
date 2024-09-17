@@ -1,4 +1,4 @@
-import { Sudoku } from './components/Sudoku';
+import { Sudoku } from '@/components/Sudoku';
 
 function App() {
   return (

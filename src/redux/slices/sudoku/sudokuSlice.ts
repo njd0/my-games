@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { GenerateEmptyBoard, GenerateEmptyCellBoard } from '../../../components/Sudoku/config';
+import { GenerateEmptyBoard, GenerateEmptyCellBoard } from '@/components/Sudoku/config';
 import { BoardCell, Difficulty, SelectedCell } from './types';
 
 export type SudokuState = {

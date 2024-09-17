@@ -1,4 +1,4 @@
-import { GenerateEmptyBoard } from '../../../components/Sudoku/config';
+import { GenerateEmptyCellBoard } from '../../../components/Sudoku/config';
 import sudokuReducer, {
   // resetBoard,
   setSelectDifficulty,
@@ -7,7 +7,7 @@ import sudokuReducer, {
 
 describe('counter reducer', () => {
   const initialState: SudokuState = {
-    board: GenerateEmptyBoard(),
+    board: GenerateEmptyCellBoard(),
     difficulty: undefined,
     selectedCell: undefined,
   };
