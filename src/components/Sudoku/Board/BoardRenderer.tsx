@@ -2,11 +2,13 @@ import { useContext } from "react";
 import { CellRenderer } from "../Cell/CellRenderer";
 import { Cell } from "../Cell/CellContext";
 import { BoardContext } from "./BoardContext";
+import { getCoordinateKey, isBoardSolved } from "@/utils/sudoku/sudoku";
 
 export const BoardRenderer = () => {
   const {
     dummyBoard,
-    boardSize
+    boardSize,
+    highlightedCells,
   } = useContext(BoardContext);
 
   return (
@@ -23,13 +25,19 @@ export const BoardRenderer = () => {
             {dummyBoard.flat().map((_, index) => {
               const row = Math.floor(index / 9)
               const col = index % 9
+              const key = getCoordinateKey({ col, row });
               return (
                 <Cell
-                  key={`${row}-${col}`}
+                  key={key}
                   row={row}
                   col={col}
                 >
-                  <CellRenderer />
+                  <CellRenderer isHighlighted={
+                    highlightedCells?.col === col ||
+                    highlightedCells?.row === row ||
+                    highlightedCells?.grid[key] === true
+                  }
+                  />
                 </Cell>
               )
             })}

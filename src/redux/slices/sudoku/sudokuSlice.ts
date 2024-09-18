@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GenerateEmptyCellBoard } from '@/components/Sudoku/config';
-import { BoardCell, Difficulty, SelectedCell } from './types';
+import { BoardCell, Difficulty, CellCoordinates } from './types';
 
 export type SudokuState = {
-  difficulty?: Difficulty;
+  difficulty: Difficulty;
   board: BoardCell[][];
-  selectedCell?: SelectedCell;
+  selectedCell?: CellCoordinates;
 }
 
 const initialState: SudokuState = {
-  difficulty: undefined,
+  difficulty: 'hard',
   board: GenerateEmptyCellBoard(),
   selectedCell: undefined
 };
@@ -23,7 +23,7 @@ export const sudokuSlice = createSlice({
     setSelectDifficulty: (state, action: PayloadAction<Difficulty>) => {
       state.difficulty = action.payload;
     },
-    setSelectCell: (state, action: PayloadAction<SelectedCell>) => {
+    setSelectCell: (state, action: PayloadAction<CellCoordinates>) => {
       state.selectedCell = action.payload
     },
     setCellValue: (state, action: PayloadAction<number>) => {
@@ -45,6 +45,13 @@ export const sudokuSlice = createSlice({
         }
       }
     },
+    setBoard: (state, action: PayloadAction<number[][]>) => {
+      for (let i = 0; i < 9; ++i) {
+        for (let j = 0; j < 9; ++j) {
+          state.board[i][j].value = action.payload[i][j]
+        }
+      }
+    },
     resetBoard: (state) => {
       state.board = GenerateEmptyCellBoard();
     }
@@ -56,6 +63,7 @@ export const {
   setSelectCell,
   setCellCandidate,
   setCellValue,
+  setBoard,
   resetBoard,
 } = sudokuSlice.actions;
 

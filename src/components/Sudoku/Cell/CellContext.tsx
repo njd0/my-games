@@ -4,11 +4,11 @@ import {
   setSelectCell,
   setCellCandidate,
 } from '@/redux/slices/sudoku/sudokuSlice';
-import { BoardCell, SelectedCell } from '@/redux/slices/sudoku/types';
+import { BoardCell, CellCoordinates } from '@/redux/slices/sudoku/types';
 import { EmptyCell } from '../config';
 
 interface CellContextValue {
-  selectCell: (cell: SelectedCell) => void
+  selectCell: (cell: CellCoordinates) => void
   selectCandidate: (candidate: number) => void
   isSelectedCell: boolean;
   row: number;
@@ -43,7 +43,7 @@ export const Cell = ({ children, row, col }: Props) => {
   const dispatch = useAppDispatch();
   const { selectedCell, board } = useAppSelector(state => state.sudoku)
 
-  const selectCell = useCallback((cell: SelectedCell) => {
+  const selectCell = useCallback((cell: CellCoordinates) => {
     dispatch(setSelectCell(cell))
   }, [dispatch]);
 

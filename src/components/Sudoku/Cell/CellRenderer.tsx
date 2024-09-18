@@ -17,7 +17,11 @@ const getCellTransform = (row: number, col: number, size: number) => {
   }
 }
 
-export const CellRenderer = () => {
+interface Props {
+  isHighlighted: boolean;
+}
+
+export const CellRenderer = ({ isHighlighted }: Props) => {
   const {
     isSelectedCell,
     selectCell,
@@ -32,9 +36,9 @@ export const CellRenderer = () => {
 
   return (
     <div
-      // className="absolute bg-[#fff] outline outline-1 outline-[#959595]"
       className={`bg-[#fff] absolute border-1 ${classNames({
-        'bg-yellow-300 cursor-pointer': isSelectedCell
+        'bg-gray-300': isHighlighted && !isSelectedCell,
+        'bg-gray-500 cursor-pointer': isSelectedCell
       })}`}
       style={getCellTransform(row, col, BoardRender.Cell.Desktop)}
       onClick={onSelectCell}

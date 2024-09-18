@@ -7,7 +7,7 @@ export type BoardCell = {
   };
 }
 
-export type SelectedCell = {
+export type CellCoordinates = {
   row: number;
   col: number;
 }

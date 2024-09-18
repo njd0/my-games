@@ -8,7 +8,7 @@ import sudokuReducer, {
 describe('counter reducer', () => {
   const initialState: SudokuState = {
     board: GenerateEmptyCellBoard(),
-    difficulty: undefined,
+    difficulty: 'easy',
     selectedCell: undefined,
   };
 
