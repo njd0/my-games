@@ -1,18 +1,20 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { CellRenderer } from "../Cell/CellRenderer";
 import { Cell } from "../Cell/CellContext";
 import { BoardContext } from "./BoardContext";
-import { getCoordinateKey, isBoardSolved } from "@/utils/sudoku/sudoku";
+import { getGroupIds } from "@/utils/sudoku/sudoku";
+import { useAppSelector } from "@/redux/useHook";
 
 export const BoardRenderer = () => {
-  const {
-    dummyBoard,
-    boardSize,
-    highlightedCells,
-  } = useContext(BoardContext);
+  const { selected, cells, candidates } = useAppSelector(state => state.sudoku);
+  const { boardSize } = useContext(BoardContext);
+
+  const highlightedCells = useMemo(() => {
+    return getGroupIds(selected)
+  }, [selected]);
 
   return (
-    <div className="w-[100vw] max-w-[500px] min-w-[auto] md:max-w-[800px] md:min-w-[500px] md:w-[80vh]">
+    <div className="w-[100vw] max-w-[500px] min-w-[auto] md:max-w-[800px] md:min-w-[500px] md:w-[80vh] cursor-default">
       <div className="relative h-0 pb-[100%]">
         <div className="absolute top-0 left-0 right-0 bottom-0 ">
           <div
@@ -22,25 +24,19 @@ export const BoardRenderer = () => {
               height: `${boardSize}px`
             }}
             className={`relative bg-[#959595] translate-x-[-50%] left-[50%] outline-[5px] outline outline-black`}>
-            {dummyBoard.flat().map((_, index) => {
-              const row = Math.floor(index / 9)
-              const col = index % 9
-              const key = getCoordinateKey({ col, row });
-              return (
-                <Cell
-                  key={key}
-                  row={row}
-                  col={col}
-                >
-                  <CellRenderer isHighlighted={
-                    highlightedCells?.col === col ||
-                    highlightedCells?.row === row ||
-                    highlightedCells?.grid[key] === true
+            {Object.values(cells).map(cell => (
+              <Cell key={cell.id}>
+                <CellRenderer
+                  cell={cell}
+                  candidates={candidates[cell.id]}
+                  isHighlighted={
+                    highlightedCells.colIds[cell.id] ||
+                    highlightedCells.rowIds[cell.id] ||
+                    highlightedCells.boxIds[cell.id]
                   }
-                  />
-                </Cell>
-              )
-            })}
+                />
+              </Cell>
+            ))}
           </div>
         </div>
       </div>

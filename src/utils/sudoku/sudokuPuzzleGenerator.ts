@@ -1,7 +1,7 @@
 // This generator is an extremely simplified version of a soduku generator
 // real generators should be based off of: https://www.sudokuwiki.org/Sudoku_Creation_and_Grading.pdf
-const GRID_SIZE = 9;
-const SUBGRID_SIZE = 3;
+
+import { GRID_SIZE, SUBGRID_SIZE } from "@/components/Sudoku/config";
 
 // Create an empty 9x9 grid filled with zeros
 const createEmptyGrid = (): number[][] => Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
@@ -110,13 +110,12 @@ const getRemovalAttempts = (difficulty: string): number => {
     case "easy": return getRandomNumberFromRange(32, 45);
     case "medium": return getRandomNumberFromRange(46, 49);
     case "hard": return getRandomNumberFromRange(50, 58);
-    default:
-      return 35;
+    default: return 35;
   }
 }
 
 // Generate a Sudoku puzzle with a unique solution
-export const generateSudoku = (difficulty: string): number[][] => {
+export const generateSudokuPuzzle = (difficulty: string): number[][] => {
   const grid = createEmptyGrid();
   // const shuffledCells = getShuffledCells();
   fillGrid(grid); // Fill the grid with a valid solution

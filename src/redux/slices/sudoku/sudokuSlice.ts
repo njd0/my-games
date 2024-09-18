@@ -1,60 +1,83 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { GenerateEmptyCellBoard } from '@/components/Sudoku/config';
-import { BoardCell, Difficulty, CellCoordinates } from './types';
+import { EMPTY_CELL } from '@/components/Sudoku/config';
+import { Difficulty, SudokuCells, SudokuCellsCandidates } from './types';
+import { generateSudokuPuzzle } from '@/utils/sudoku/sudokuPuzzleGenerator';
 
 export type SudokuState = {
   difficulty: Difficulty;
-  board: BoardCell[][];
-  selectedCell?: CellCoordinates;
+  cells: SudokuCells,
+  id: string, // start date
+  candidates: SudokuCellsCandidates,
+  selected: number,
 }
 
-const initialState: SudokuState = {
-  difficulty: 'hard',
-  board: GenerateEmptyCellBoard(),
-  selectedCell: undefined
-};
+const getId = () => {
+  const d = new Date();
+  const day = d.getDate();
+  const month = d.getMonth() + 1; //Months are zero based
+  const year = d.getFullYear();
+  return `${month}-${day}-${year}`
+}
+
+export const getNewGameState = (difficulty: Difficulty): SudokuState => {
+  const id = getId();
+  const board = generateSudokuPuzzle(difficulty);
+  let selected: number = -1;
+
+  const boardState = board.flat().reduce((acc, curr, i) => {
+    if (selected === -1 && curr === EMPTY_CELL) selected = i
+    acc.cells[i] = {
+      id: i,
+      prefilled: curr !== EMPTY_CELL,
+      value: curr,
+    }
+
+    acc.candidates[i] = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i, false]))
+
+    return acc;
+  }, {
+    cells: {},
+    candidates: {},
+  } as {
+    cells: SudokuCells
+    candidates: SudokuCellsCandidates
+  })
+
+  return {
+    difficulty,
+    cells: boardState.cells,
+    candidates: boardState.candidates,
+    id,
+    selected,
+  }
+}
+
+const initialState: SudokuState = getNewGameState('easy');
 
 export const sudokuSlice = createSlice({
   name: 'sudoku',
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    // Use the PayloadAction type to declare the contents of `action.payload`
     setSelectDifficulty: (state, action: PayloadAction<Difficulty>) => {
-      state.difficulty = action.payload;
+      state = getNewGameState(action.payload);
     },
-    setSelectCell: (state, action: PayloadAction<CellCoordinates>) => {
-      state.selectedCell = action.payload
+    setSelectCell: (state, action: PayloadAction<number>) => {
+      state.selected = action.payload
     },
-    setCellValue: (state, action: PayloadAction<number>) => {
-      if (!state.selectedCell) return;
-
-      state.board[state.selectedCell.row][state.selectedCell.col] = {
-        ...state.board[state.selectedCell.row][state.selectedCell.col],
-        value: action.payload,
-      }
+    setCellValue: (state, action: PayloadAction<{
+      cellId: number;
+      value: number;
+    }>) => {
+      const { value, cellId } = action.payload;
+      state.cells[cellId].value = value;
     },
-    setCellCandidate: (state, action: PayloadAction<number>) => {
-      if (!state.selectedCell) return;
-
-      state.board[state.selectedCell.row][state.selectedCell.col] = {
-        ...state.board[state.selectedCell.row][state.selectedCell.col],
-        candidates: {
-          ...state.board[state.selectedCell.row][state.selectedCell.col].candidates,
-          [action.payload]: !state.board[state.selectedCell.row][state.selectedCell.col].candidates[action.payload],
-        }
-      }
+    setCellCandidate: (state, action: PayloadAction<{
+      cellId: number;
+      candidate: number;
+    }>) => {
+      const { candidate, cellId } = action.payload;
+      state.candidates[cellId][candidate] = !state.candidates[cellId][candidate]
     },
-    setBoard: (state, action: PayloadAction<number[][]>) => {
-      for (let i = 0; i < 9; ++i) {
-        for (let j = 0; j < 9; ++j) {
-          state.board[i][j].value = action.payload[i][j]
-        }
-      }
-    },
-    resetBoard: (state) => {
-      state.board = GenerateEmptyCellBoard();
-    }
   },
 });
 
@@ -63,8 +86,6 @@ export const {
   setSelectCell,
   setCellCandidate,
   setCellValue,
-  setBoard,
-  resetBoard,
 } = sudokuSlice.actions;
 
 export default sudokuSlice.reducer;

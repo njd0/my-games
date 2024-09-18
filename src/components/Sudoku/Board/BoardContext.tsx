@@ -1,42 +1,21 @@
 import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/redux/useHook'
 import {
-  setBoard,
   setCellValue,
 } from '@/redux/slices/sudoku/sudokuSlice';
-import { BoardRender, EmptyCell, GenerateEmptyBoard } from '../config';
-import { CellCoordinates } from '@/redux/slices/sudoku/types';
-import { getRelatedGroups } from '@/utils//sudoku/sudoku';
-import { generateSudoku } from '@/utils/sudoku/boardGenerator';
-
+import { BoardRender, EMPTY_CELL } from '../config';
 interface BoardContextValue {
-  dummyBoard: number[][];
   boardSize: number;
-  highlightedCells?: ReturnType<typeof getRelatedGroups>
 }
 
 export const BoardContext =
   createContext<BoardContextValue>({
-    dummyBoard: [],
     boardSize: (9 * BoardRender.Cell.Desktop + (2 * BoardRender.Gap) - 3),
-    highlightedCells: undefined,
   })
 
 export const Board: FC<PropsWithChildren> = ({ children }) => {
-  const {
-    selectedCell,
-    difficulty,
-  } = useAppSelector(state => state.sudoku);
+  const { selected } = useAppSelector(state => state.sudoku);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    // todo use local storage to cache unsolved generated board states
-    // todo every day cache should be cleared
-    const board = generateSudoku(difficulty);
-    dispatch(setBoard(board));
-  }, [difficulty, dispatch])
-
-  const dummyBoard = useMemo(() => GenerateEmptyBoard(), []);
 
   const boardSize = useMemo(() => {
     // todo make this reactive to screen size
@@ -47,32 +26,29 @@ export const Board: FC<PropsWithChildren> = ({ children }) => {
     const { key } = e;
     switch (true) {
       case (Number(key) >= 1 && Number(key) <= 9):
-        dispatch(setCellValue(Number(key)));
+        dispatch(setCellValue({
+          cellId: selected,
+          value: Number(key)
+        }));
         break;
       case (key === 'Backspace'):
-        dispatch(setCellValue(EmptyCell));
+        dispatch(setCellValue({
+          cellId: selected,
+          value: EMPTY_CELL,
+        }));
         break;
     }
-  }, [setCellValue])
+  }, [dispatch, selected])
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
-
     return () => {
       document.removeEventListener('keydown', onKeyDown)
     }
   }, [onKeyDown]);
 
-  const highlightedCells = useMemo(() => {
-    if (!selectedCell) return undefined;
-    const { col, row } = selectedCell;
-    return getRelatedGroups({ col, row });
-  }, [selectedCell]);
-
   const contextValue: BoardContextValue = {
-    dummyBoard,
     boardSize,
-    highlightedCells,
   }
 
   return (

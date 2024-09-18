@@ -3,22 +3,27 @@ import { CellContext } from "./CellContext";
 import classNames from "classnames";
 
 interface Props {
-  candidates: { [key: string]: boolean }
+  cellId: number
+  candidates: { [k: number]: boolean }
+  isSelected: boolean
 }
 
-export const Candidates = ({ candidates }: Props) => {
+export const Candidates = ({
+  cellId,
+  candidates,
+  isSelected,
+}: Props) => {
   const {
-    isSelectedCell,
     selectCandidate,
   } = useContext(CellContext);
 
   const onSelectCandidate = useCallback((candidate: number) => {
-    selectCandidate(candidate);
-  }, [selectCandidate])
+    selectCandidate(cellId, candidate);
+  }, [cellId, selectCandidate]);
 
   return (
     <div className={classNames("grid grid-cols-3 w-full h-full", {
-      'pointer-events-none': !isSelectedCell
+      'pointer-events-none': !isSelected
     })}>
       {Object.entries(candidates).map(([k, v]) => (
         <div
