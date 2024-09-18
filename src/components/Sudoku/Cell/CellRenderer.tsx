@@ -21,13 +21,15 @@ const getCellTransform = (row: number, col: number, size: number) => {
 
 interface Props {
   isHighlighted: boolean;
+  isConflicted: boolean;
   cell: SudokuCell;
   candidates: {
     [k: number]: boolean;
   };
+  distanceFromSelected: number;
 }
 
-export const CellRenderer = ({ cell, candidates, isHighlighted }: Props) => {
+export const CellRenderer = ({ cell, candidates, isConflicted, isHighlighted, distanceFromSelected }: Props) => {
   const {
     isSelectedCell,
     selectCell,
@@ -47,15 +49,34 @@ export const CellRenderer = ({ cell, candidates, isHighlighted }: Props) => {
 
   return (
     <div
-      className={`bg-[#fff] absolute border-1 ${classNames({
+      // delay-500 todo delay based on distance from selected 
+      className={classNames('bg-[#fff] absolute border-1', {
+        'bg-gray-200': cell.prefilled && !isHighlighted && !isSelected,
         'bg-gray-300': isHighlighted && !isSelected,
-        'bg-gray-500 cursor-pointer': isSelected
-      })}`}
+        'bg-gray-400 cursor-pointer': isSelected
+        // [`transition-colors duration-500 animate-color-change delay-${Math.floor(distanceFromSelected) * 100}`]: isHighlighted,
+        // [`delay-${500}`]: true
+      })}
       style={getCellTransform(row, col, BoardRender.Cell.Desktop)}
       onClick={onSelectCell}
     >
       {cell.value !== EMPTY_CELL ?
-        <div className="flex w-full h-full justify-center items-center font-bold text-4xl">{cell.value}</div> :
+        <div className="flex w-full h-full justify-center items-center relative">
+          <div className="font-bold text-4xl">
+            {cell.value}
+          </div>
+          {isConflicted && (
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                bottom: '4px',
+                right: '4px'
+              }}
+              className="absolute translate-x-[50%] bg-red-400 rounded-full">
+            </div>
+          )}
+        </div> :
         <Candidates isSelected={isSelected} cellId={cell.id} candidates={candidates} />
       }
       {/* color for pre-filled cell #e6e6e6 */}

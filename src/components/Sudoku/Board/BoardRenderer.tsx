@@ -1,17 +1,57 @@
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { CellRenderer } from "../Cell/CellRenderer";
 import { Cell } from "../Cell/CellContext";
 import { BoardContext } from "./BoardContext";
-import { getGroupIds } from "@/utils/sudoku/sudoku";
+import { cellIdToRowCol, get2dDistance, getGroupIds } from "@/utils/sudoku/sudoku";
 import { useAppSelector } from "@/redux/useHook";
+import { SudokuCell } from "@/redux/slices/sudoku/types";
+import { BoolSet } from "@/utils/types";
+import { EMPTY_CELL } from "../config";
 
 export const BoardRenderer = () => {
   const { selected, cells, candidates } = useAppSelector(state => state.sudoku);
   const { boardSize } = useContext(BoardContext);
 
-  const highlightedCells = useMemo(() => {
-    return getGroupIds(selected)
-  }, [selected]);
+  const selectedGroupIds = useMemo(() => getGroupIds(selected), [selected]);
+
+  const isInSelectedGroup = useCallback((cellId: number) => {
+    return selectedGroupIds.colIds[cellId] ||
+      selectedGroupIds.rowIds[cellId] ||
+      selectedGroupIds.boxIds[cellId]
+  }, [selectedGroupIds]);
+
+  const conflictedCells = useMemo(() => {
+    const conflicted: BoolSet = {};
+
+    // find all conflicted cells
+    for (const cell of Object.values(cells)) {
+      if (cell.value === EMPTY_CELL) continue;
+      // for each cell, get all related group ids
+      const groupIds = getGroupIds(cell.id);
+
+      // get all groupIds, excluding current cell
+      const ids = Object.values(groupIds).reduce((acc, curr) => {
+        return [
+          ...acc,
+          ...Object.keys(curr).map(Number),
+        ].filter((value, index, self) => {
+          return self.indexOf(value) === index && value !== cell.id;
+        });
+      }, [] as number[]);
+
+      for (let id of ids) {
+        if (cells[id].value === cell.value) conflicted[id] = true;
+      }
+    }
+
+    return conflicted;
+  }, [cells])
+
+  const getDistance = useCallback((cellId: number) => {
+    const { row: r1, col: c1 } = cellIdToRowCol(selected);
+    const { row: r2, col: c2 } = cellIdToRowCol(cellId);
+    return get2dDistance(c1, r1, c2, r2);
+  }, [selected])
 
   return (
     <div className="w-[100vw] max-w-[500px] min-w-[auto] md:max-w-[800px] md:min-w-[500px] md:w-[80vh] cursor-default">
@@ -29,11 +69,9 @@ export const BoardRenderer = () => {
                 <CellRenderer
                   cell={cell}
                   candidates={candidates[cell.id]}
-                  isHighlighted={
-                    highlightedCells.colIds[cell.id] ||
-                    highlightedCells.rowIds[cell.id] ||
-                    highlightedCells.boxIds[cell.id]
-                  }
+                  isConflicted={conflictedCells[cell.id]}
+                  isHighlighted={isInSelectedGroup(cell.id)}
+                  distanceFromSelected={getDistance(cell.id)}
                 />
               </Cell>
             ))}

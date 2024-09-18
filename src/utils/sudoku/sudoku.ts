@@ -1,8 +1,10 @@
 import { EMPTY_CELL } from "@/components/Sudoku/config";
 import { CellCoordinates } from "@/redux/slices/sudoku/types";
+import { BoolSet } from "../types";
 
-type BoolSet = { [k: number]: boolean }
-
+export const get2dDistance = (x1: number, y1: number, x2: number, y2: number): number => {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
 
 export const cellIdToRowCol = (cellId: number): CellCoordinates => {
   return {
