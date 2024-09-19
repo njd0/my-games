@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -7,16 +9,18 @@ module.exports = {
     extend: {
       keyframes: {
         'color-change': {
-          '0%': { backgroundColor: '#fff' }, // Blue (base color)
-          '50%': { backgroundColor: '#f0f' }, // Green (first hover color)
-          '100%': { backgroundColor: '#fff' }, // Orange (second hover color)
+          '0%': { backgroundColor: colors.white },
+          '50%': { backgroundColor: colors.gray['500'] },
+          '100%': { backgroundColor: colors.gray['300'] },
         },
       },
       animation: {
-        'color-change': 'color-change 2s ease-in-out forwards',
+        'color-change': 'color-change 0.5s ease-in-out forwards',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-animation-delay"),
+  ],
 }
 

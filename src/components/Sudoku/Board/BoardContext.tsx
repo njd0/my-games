@@ -14,7 +14,7 @@ export const BoardContext =
   })
 
 export const Board: FC<PropsWithChildren> = ({ children }) => {
-  const { selected } = useAppSelector(state => state.sudoku);
+  const { selected, cells } = useAppSelector(state => state.sudoku);
   const dispatch = useAppDispatch();
 
   const boardSize = useMemo(() => {
@@ -24,6 +24,10 @@ export const Board: FC<PropsWithChildren> = ({ children }) => {
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
     const { key } = e;
+
+    const { prefilled } = cells[selected];
+    if (prefilled) return;
+
     switch (true) {
       case (Number(key) >= 1 && Number(key) <= 9):
         dispatch(setCellValue({
@@ -38,7 +42,7 @@ export const Board: FC<PropsWithChildren> = ({ children }) => {
         }));
         break;
     }
-  }, [dispatch, selected])
+  }, [dispatch, selected, cells])
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);

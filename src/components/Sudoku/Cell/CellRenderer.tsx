@@ -1,10 +1,11 @@
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CellContext } from "./CellContext";
 import { BoardRender, EMPTY_CELL } from "../config";
 import classNames from "classnames";
 import { Candidates } from "./Candidates";
-import { cellIdToRowCol } from "@/utils/sudoku/sudoku";
+import { cellIdToRowCol } from "@/utils/sudoku/helpers";
 import { SudokuCell } from "@/redux/slices/sudoku/types";
+import { useAppSelector } from "@/redux/useHook";
 
 // TODO:why subtract subGrid Row and Col from top and left.
 // AND why - 3 from board size must be done together. else all breaks???
@@ -51,11 +52,11 @@ export const CellRenderer = ({ cell, candidates, isConflicted, isHighlighted, di
     <div
       // delay-500 todo delay based on distance from selected 
       className={classNames('bg-[#fff] absolute border-1', {
-        'bg-gray-200': cell.prefilled && !isHighlighted && !isSelected,
-        'bg-gray-300': isHighlighted && !isSelected,
-        'bg-gray-400 cursor-pointer': isSelected
-        // [`transition-colors duration-500 animate-color-change delay-${Math.floor(distanceFromSelected) * 100}`]: isHighlighted,
-        // [`delay-${500}`]: true
+        'text-indigo-900': cell.prefilled,
+        // 'bg-gray-300': isHighlighted && !isSelected,
+        'bg-yellow-400 cursor-pointer': isSelected,
+        'transform animate-color-change': isHighlighted,
+        [`animation-delay-${Math.floor(distanceFromSelected) * 100}`]: distanceFromSelected,
       })}
       style={getCellTransform(row, col, BoardRender.Cell.Desktop)}
       onClick={onSelectCell}

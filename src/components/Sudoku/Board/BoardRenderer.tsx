@@ -2,9 +2,8 @@ import { useCallback, useContext, useMemo } from "react";
 import { CellRenderer } from "../Cell/CellRenderer";
 import { Cell } from "../Cell/CellContext";
 import { BoardContext } from "./BoardContext";
-import { cellIdToRowCol, get2dDistance, getGroupIds } from "@/utils/sudoku/sudoku";
+import { cellIdToRowCol, get2dDistance, getGroupIds } from "@/utils/sudoku/helpers";
 import { useAppSelector } from "@/redux/useHook";
-import { SudokuCell } from "@/redux/slices/sudoku/types";
 import { BoolSet } from "@/utils/types";
 import { EMPTY_CELL } from "../config";
 
@@ -65,7 +64,8 @@ export const BoardRenderer = () => {
             }}
             className={`relative bg-[#959595] translate-x-[-50%] left-[50%] outline-[5px] outline outline-black`}>
             {Object.values(cells).map(cell => (
-              <Cell key={cell.id}>
+              // key is id + selected for bloom animation reset
+              <Cell key={cell.id + ' ' + selected}>
                 <CellRenderer
                   cell={cell}
                   candidates={candidates[cell.id]}
