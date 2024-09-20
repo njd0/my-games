@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Difficulty, SudokuCells, SudokuCellsCandidates } from './types';
-import { updateSudokuLocalStorage } from '@/utils/sudoku/localStorage';
+import { updateSudokuLocalStorage, updateSudokuTimerLocalStorage } from '@/utils/sudoku/localStorage';
 import { loadSudokuState } from './loader';
 
 export type SudokuState = {
@@ -9,6 +9,7 @@ export type SudokuState = {
   id: string, // start date
   candidates: SudokuCellsCandidates,
   selected: number,
+  time: number,
 }
 
 const initialState: SudokuState = loadSudokuState('easy');
@@ -25,6 +26,10 @@ export const sudokuSlice = createSlice({
     },
     setSelectCell: (state, action: PayloadAction<number>) => {
       state.selected = action.payload;
+      updateSudokuLocalStorage(state);
+    },
+    setTime: (state, action: PayloadAction<number>) => {
+      state.time = action.payload;
       updateSudokuLocalStorage(state);
     },
     setCellValue: (state, action: PayloadAction<{
@@ -51,6 +56,7 @@ export const {
   setSelectCell,
   setCellCandidate,
   setCellValue,
+  setTime,
 } = sudokuSlice.actions;
 
 export default sudokuSlice.reducer;

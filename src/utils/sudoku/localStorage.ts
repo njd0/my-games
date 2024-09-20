@@ -1,8 +1,9 @@
 import { SudokuState } from "@/redux/slices/sudoku/sudokuSlice";
 import { Difficulty } from "@/redux/slices/sudoku/types";
 
-const key = 'mg-sudoku'
-const sudokuLocalStorageKey = (difficulty: Difficulty) => `${key}-${difficulty}`
+const stateKey = 'mg-sudoku'
+const sudokuLocalStorageKey = (difficulty: Difficulty) => `${stateKey}-${difficulty}`
+
 export const updateSudokuLocalStorage = (state: SudokuState) => {
   window.localStorage.setItem(
     sudokuLocalStorageKey(state.difficulty),

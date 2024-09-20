@@ -46,6 +46,7 @@ export const generateNewGameState = (difficulty: Difficulty): SudokuState => {
     candidates: boardState.candidates,
     id,
     selected,
+    time: 0,
   }
 }
 
