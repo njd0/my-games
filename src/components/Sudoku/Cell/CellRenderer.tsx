@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CellContext } from "./CellContext";
-import { BoardRender, EMPTY_CELL } from "../config";
+import { BoardRender, EMPTY_CELL } from "../../../utils/sudoku/config";
 import classNames from "classnames";
 import { Candidates } from "./Candidates";
 import { cellIdToRowCol } from "@/utils/sudoku/helpers";
@@ -54,7 +54,16 @@ export const CellRenderer = ({ cell, candidates, isConflicted, isHighlighted, di
         'text-indigo-900': cell.prefilled,
         'bg-yellow-400 cursor-pointer': isSelected,
         'transform animate-color-change': isHighlighted,
-        [`animation-delay-${Math.floor(distanceFromSelected) * 100}`]: distanceFromSelected,
+        // [`animation-delay-${Math.floor(distanceFromSelected) * 100}`]: distanceFromSelected,
+        [`animation-delay-100`]: Math.floor(distanceFromSelected) === 1,
+        [`animation-delay-200`]: Math.floor(distanceFromSelected) === 2,
+        [`animation-delay-300`]: Math.floor(distanceFromSelected) === 3,
+        [`animation-delay-400`]: Math.floor(distanceFromSelected) === 4,
+        [`animation-delay-500`]: Math.floor(distanceFromSelected) === 5,
+        [`animation-delay-600`]: Math.floor(distanceFromSelected) === 6,
+        [`animation-delay-700`]: Math.floor(distanceFromSelected) === 7,
+        [`animation-delay-800`]: Math.floor(distanceFromSelected) === 8,
+        [`animation-delay-900`]: Math.floor(distanceFromSelected) === 9,
       })}
       style={getCellTransform(row, col, BoardRender.Cell.Desktop)}
       onClick={onSelectCell}

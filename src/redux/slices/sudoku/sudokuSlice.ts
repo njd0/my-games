@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Difficulty, SudokuCells, SudokuCellsCandidates } from './types';
 import { updateSudokuLocalStorage } from '@/utils/sudoku/localStorage';
-import { loadSudokuState } from './loader';
+import { loadSudokuState, resetGameState } from './loader';
 
 export type SudokuState = {
   difficulty: Difficulty;
@@ -56,6 +56,9 @@ export const sudokuSlice = createSlice({
       state.candidates = action.payload
       updateSudokuLocalStorage(state);
     },
+    setResetBoard: (state) => {
+      Object.assign(state, resetGameState(state));
+    },
     setNewBoard: (state, action: PayloadAction<Difficulty>) => {
       Object.assign(state, loadSudokuState(action.payload, true));
       updateSudokuLocalStorage(state);
@@ -72,6 +75,7 @@ export const {
   setCells,
   setCandidates,
   setNewBoard,
+  setResetBoard,
 } = sudokuSlice.actions;
 
 export default sudokuSlice.reducer;

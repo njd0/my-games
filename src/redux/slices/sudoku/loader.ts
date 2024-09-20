@@ -1,6 +1,6 @@
 import { generateSudokuPuzzle } from "@/utils/sudoku/sudokuPuzzleGenerator";
 import { Difficulty, SudokuCells, SudokuCellsCandidates } from "./types";
-import { EMPTY_CELL } from "@/components/Sudoku/config";
+import { EMPTY_CANDIDATES, EMPTY_CELL } from "@/utils/sudoku/config";
 import { SudokuState } from "./sudokuSlice";
 import { getSudokuLocalStorage } from "@/utils/sudoku/localStorage";
 
@@ -16,20 +16,39 @@ const parseId = (stateId: string): string[] => {
   return stateId.split('-');
 }
 
+export const resetGameState = (state: SudokuState): SudokuState | undefined => {
+  let selected: number = -1;
+  state.time = 0;
+
+  for (const key in state.cells) {
+    if (state.cells[key].prefilled === false) {
+      state.cells[key].value = EMPTY_CELL;
+    }
+
+    if (selected === -1 && state.cells[key].value === EMPTY_CELL) selected = Number(key);
+
+    state.candidates[key] = EMPTY_CANDIDATES();
+  }
+  console.log({ selected })
+  state.selected = selected
+  return state;
+}
+
 export const generateNewGameState = (difficulty: Difficulty): SudokuState => {
   const id = getId();
   const board = generateSudokuPuzzle(difficulty);
   let selected: number = -1;
 
   const boardState = board.flat().reduce((acc, curr, i) => {
-    if (selected === -1 && curr === EMPTY_CELL) selected = i
+    if (selected === -1 && curr === EMPTY_CELL) selected = i;
+
     acc.cells[i] = {
       id: i,
       prefilled: curr !== EMPTY_CELL,
       value: curr,
     }
 
-    acc.candidates[i] = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i + 1, false]))
+    acc.candidates[i] = EMPTY_CANDIDATES();
 
     return acc;
   }, {

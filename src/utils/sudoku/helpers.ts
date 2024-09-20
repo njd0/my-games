@@ -1,7 +1,88 @@
-import { EMPTY_CELL, GRID_SIZE, SUBGRID_SIZE } from "@/components/Sudoku/config";
-import { CellCoordinates } from "@/redux/slices/sudoku/types";
+import { EMPTY_CELL, GRID_SIZE } from "./config";
+import { CellCoordinates, SudokuCells, SudokuCellsCandidates } from "@/redux/slices/sudoku/types";
 import { BoolSet } from "../types";
 
+const getRowIndexes = (index: number): number[] => {
+  const rowStart = Math.floor(index / 9) * 9;
+  return Array.from({ length: 9 }, (_, i) => rowStart + i);
+}
+
+const getColIndexes = (index: number): number[] => {
+  const colStart = index % 9;
+  return Array.from({ length: 9 }, (_, i) => colStart + i * 9);
+}
+
+const getBoxIndexes = (index: number): number[] => {
+  const rowStart = Math.floor(index / 9);
+  const colStart = index % 9;
+
+  // Calculate which 3x3 box the index is in
+  const boxRowStart = Math.floor(rowStart / 3) * 3;
+  const boxColStart = Math.floor(colStart / 3) * 3;
+
+  // Collect all 9 elements of the 3x3 box
+  const boxIndexes: number[] = [];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      boxIndexes.push((boxRowStart + i) * 9 + (boxColStart + j));
+    }
+  }
+  return boxIndexes;
+}
+
+const inGroup = (cells: SudokuCells, groupIds: number[], value: number) => {
+  for (let i = 0; i < groupIds.length; ++i) {
+    if (cells[groupIds[i]].value === value) return true;
+  }
+  return false
+}
+
+// 1D array isValid value
+export const isValidSudokuCell = (cells: SudokuCells, i: number, value: number) => {
+  return !inGroup(cells, getRowIndexes(i), value)
+    && !inGroup(cells, getColIndexes(i), value)
+    && !inGroup(cells, getBoxIndexes(i), value)
+}
+
+// in place solve sudoku puzzle
+export const solveCells = (cells: SudokuCells) => {
+  for (let y = 0; y < Object.keys(cells).length; ++y) {
+    if (cells[y].value === EMPTY_CELL) {
+      const numbers = getShuffledNumbers();
+      for (let x = 0; x < numbers.length; ++x) {
+        if (isValidSudokuCell(cells, y, numbers[x])) {
+          cells[y].value = numbers[x]
+
+          if (solveCells(cells)) {
+            return true;
+          }
+
+          cells[y].value = EMPTY_CELL
+        }
+      }
+
+      return false;
+    }
+  }
+
+  return true
+}
+
+// in place solve board candidates
+export const solveCellsCandidates = (cells: SudokuCells, candidates: SudokuCellsCandidates) => {
+  for (let y = 0; y < Object.keys(cells).length; ++y) {
+    if (cells[y].value === EMPTY_CELL) {
+      const numbers = getShuffledNumbers();
+      for (let x = 0; x < numbers.length; ++x) {
+        if (isValidSudokuCell(cells, y, numbers[x])) {
+          candidates[y][numbers[x]] = true;
+        }
+      }
+    }
+  }
+}
+
+// get float distance of 2 cells
 export const get2dDistance = (x1: number, y1: number, x2: number, y2: number): number => {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
@@ -17,6 +98,7 @@ const rowColToCellId = ({ row, col }: CellCoordinates): number => {
   return (row * 9) + col
 }
 
+// get 1D array col, row, box ids
 export const getGroupIds = (cellId: number): { [k: string]: BoolSet } => {
   const { row, col } = cellIdToRowCol(cellId);
 
@@ -45,31 +127,6 @@ export const getGroupIds = (cellId: number): { [k: string]: BoolSet } => {
   }
 }
 
-// Check if the number exists in the current row
-const inRow = (grid: number[][], row: number, num: number): boolean => grid[row].includes(num);
-
-// Check if the number exists in the current column
-const inCol = (grid: number[][], col: number, num: number): boolean => grid.some((row) => row[col] === num);
-
-// Check if the number exists in the 3x3 subgrid
-const inBox = (grid: number[][], row: number, col: number, num: number): boolean => {
-  const startRow = Math.floor(row / SUBGRID_SIZE) * SUBGRID_SIZE;
-  const startCol = Math.floor(col / SUBGRID_SIZE) * SUBGRID_SIZE;
-  for (let r = 0; r < SUBGRID_SIZE; r++) {
-    for (let c = 0; c < SUBGRID_SIZE; c++) {
-      if (grid[startRow + r][startCol + c] === num) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-// Check if placing a number is valid in the row, column, and box
-export const isValid = (grid: number[][], row: number, col: number, num: number): boolean => {
-  return !inRow(grid, row, num) && !inCol(grid, col, num) && !inBox(grid, row, col, num);
-};
-
 // Shuffle an array using the Fisher-Yates algorithm
 const shuffleArray = <T>(array: T[]): T[] => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -84,3 +141,12 @@ export const getShuffledNumbers = (): number[] => {
   const numbers = Array.from({ length: GRID_SIZE }, (_, i) => i + 1);
   return shuffleArray(numbers)
 };
+
+// get true random number in range
+export const getTrueRandomNumber = (): number => {
+  const randomArray = new Uint8Array(1); // Create a Uint8Array to store the random value
+  window.crypto.getRandomValues(randomArray); // Fill the array with cryptographically random values
+  return randomArray[0];
+}
+
+export const getRandomGridIndex = () => getTrueRandomNumber() % 9;

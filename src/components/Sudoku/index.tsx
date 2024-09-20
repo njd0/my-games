@@ -5,8 +5,8 @@ import { BoardRenderer } from "./Board/BoardRenderer";
 export const Sudoku = () => {
   return (
     <div className="flex flex-col justify-center items-center mt-8">
-      <BoardHeader />
       <Board>
+        <BoardHeader />
         <BoardRenderer />
       </Board>
       <div>

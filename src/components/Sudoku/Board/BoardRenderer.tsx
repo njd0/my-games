@@ -5,11 +5,12 @@ import { BoardContext } from "./BoardContext";
 import { cellIdToRowCol, get2dDistance, getGroupIds } from "@/utils/sudoku/helpers";
 import { useAppSelector } from "@/redux/useHook";
 import { BoolSet } from "@/utils/types";
-import { EMPTY_CELL } from "../config";
+import { EMPTY_CELL } from "../../../utils/sudoku/config";
 
 export const BoardRenderer = () => {
   const { selected, cells, candidates } = useAppSelector(state => state.sudoku);
   const { boardSize } = useContext(BoardContext);
+  // todo add paused state 
 
   const selectedGroupIds = useMemo(() => getGroupIds(selected), [selected]);
 
@@ -55,14 +56,14 @@ export const BoardRenderer = () => {
   return (
     <div className="w-[100vw] max-w-[500px] min-w-[auto] md:max-w-[800px] md:min-w-[500px] md:w-[80vh] cursor-default">
       <div className="relative h-0 pb-[100%]">
-        <div className="absolute top-0 left-0 right-0 bottom-0 ">
+        <div className="absolute top-0 left-0 right-0 bottom-0">
           <div
             style={{
               top: '5px',
               width: `${boardSize}px`,
               height: `${boardSize}px`
             }}
-            className={`relative bg-[#959595] translate-x-[-50%] left-[50%] outline-[5px] outline outline-black`}>
+            className='relative bg-[#959595] translate-x-[-50%] left-[50%] outline-[5px] outline outline-black'>
             {Object.values(cells).map(cell => (
               // key is id + selected for bloom animation reset
               <Cell key={cell.id + ' ' + selected}>

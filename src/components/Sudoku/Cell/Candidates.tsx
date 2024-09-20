@@ -30,7 +30,7 @@ export const Candidates = ({
           key={k}
           className={classNames("flex items-center justify-center text-sm", {
             'opacity-1': v === true,
-            'opacity-0 transition-opacity duration-1000 ease-out hover:opacity-60': v === false,
+            'opacity-0 hover:transition-opacity hover:duration-1000 hover:ease-out hover:opacity-60': v === false,
           })}
           onClick={() => onSelectCandidate(Number(k))}
         >{k}</div>
