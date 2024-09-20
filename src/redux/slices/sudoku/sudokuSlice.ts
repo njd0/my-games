@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Difficulty, SudokuCells, SudokuCellsCandidates } from './types';
-import { updateSudokuLocalStorage, updateSudokuTimerLocalStorage } from '@/utils/sudoku/localStorage';
+import { updateSudokuLocalStorage } from '@/utils/sudoku/localStorage';
 import { loadSudokuState } from './loader';
 
 export type SudokuState = {
@@ -19,7 +19,7 @@ export const sudokuSlice = createSlice({
   name: 'sudoku',
   initialState,
   reducers: {
-    setSelectDifficulty: (state, action: PayloadAction<Difficulty>) => {
+    setDifficulty: (state, action: PayloadAction<Difficulty>) => {
       state.difficulty = action.payload;
       Object.assign(state, loadSudokuState(action.payload));
       updateSudokuLocalStorage(state);
@@ -30,6 +30,10 @@ export const sudokuSlice = createSlice({
     },
     setTime: (state, action: PayloadAction<number>) => {
       state.time = action.payload;
+      updateSudokuLocalStorage(state);
+    },
+    setCells: (state, action: PayloadAction<SudokuCells>) => {
+      state.cells = action.payload;
       updateSudokuLocalStorage(state);
     },
     setCellValue: (state, action: PayloadAction<{
@@ -48,15 +52,26 @@ export const sudokuSlice = createSlice({
       state.candidates[cellId][candidate] = !state.candidates[cellId][candidate]
       updateSudokuLocalStorage(state);
     },
+    setCandidates: (state, action: PayloadAction<SudokuCellsCandidates>) => {
+      state.candidates = action.payload
+      updateSudokuLocalStorage(state);
+    },
+    setNewBoard: (state, action: PayloadAction<Difficulty>) => {
+      Object.assign(state, loadSudokuState(action.payload, true));
+      updateSudokuLocalStorage(state);
+    },
   },
 });
 
 export const {
-  setSelectDifficulty,
+  setDifficulty,
   setSelectCell,
   setCellCandidate,
   setCellValue,
   setTime,
+  setCells,
+  setCandidates,
+  setNewBoard,
 } = sudokuSlice.actions;
 
 export default sudokuSlice.reducer;

@@ -1,6 +1,6 @@
 import { generateNewGameState } from './loader';
 import sudokuReducer, {
-  setSelectDifficulty,
+  setDifficulty,
   SudokuState,
 } from './sudokuSlice';
 
@@ -15,7 +15,7 @@ describe('counter reducer', () => {
   // });
 
   it('should handle difficult change', () => {
-    const actual = sudokuReducer(initialState, setSelectDifficulty('medium'));
+    const actual = sudokuReducer(initialState, setDifficulty('medium'));
     expect(actual.difficulty).toEqual('medium');
   });
 });

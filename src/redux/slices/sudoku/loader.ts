@@ -29,7 +29,7 @@ export const generateNewGameState = (difficulty: Difficulty): SudokuState => {
       value: curr,
     }
 
-    acc.candidates[i] = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i, false]))
+    acc.candidates[i] = Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i + 1, false]))
 
     return acc;
   }, {
@@ -50,7 +50,9 @@ export const generateNewGameState = (difficulty: Difficulty): SudokuState => {
   }
 }
 
-export const loadSudokuState = (difficulty: Difficulty): SudokuState => {
+export const loadSudokuState = (difficulty: Difficulty, forceRegen: boolean = false): SudokuState => {
+  if (forceRegen === true) return generateNewGameState(difficulty);
+
   const localStorageState = getSudokuLocalStorage(difficulty);
   // generae new board if none in storage
   if (!localStorageState) return generateNewGameState(difficulty);

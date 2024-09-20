@@ -50,10 +50,8 @@ export const CellRenderer = ({ cell, candidates, isConflicted, isHighlighted, di
 
   return (
     <div
-      // delay-500 todo delay based on distance from selected 
       className={classNames('bg-[#fff] absolute border-1', {
         'text-indigo-900': cell.prefilled,
-        // 'bg-gray-300': isHighlighted && !isSelected,
         'bg-yellow-400 cursor-pointer': isSelected,
         'transform animate-color-change': isHighlighted,
         [`animation-delay-${Math.floor(distanceFromSelected) * 100}`]: distanceFromSelected,
