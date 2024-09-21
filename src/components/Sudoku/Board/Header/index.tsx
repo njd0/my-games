@@ -1,7 +1,10 @@
 import { useAppSelector } from "@/redux/useHook";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Difficulty } from "@/redux/slices/sudoku/types";
-import { BoardContext } from "./BoardContext";
+import { BoardContext } from "../BoardContext";
+import { ActionMenu } from "./ActionMenu";
+import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import PauseIcon from '@mui/icons-material/Pause';
 
 const parseSeconds = (seconds: number) => {
   const d = Math.floor(seconds / (3600 * 24));
@@ -17,7 +20,7 @@ const parseSeconds = (seconds: number) => {
 }
 
 export const BoardHeader = () => {
-  const { time } = useAppSelector(state => state.sudoku);
+  const { time, difficulty } = useAppSelector(state => state.sudoku);
 
   const {
     solveBoardPuzzle,
@@ -76,7 +79,7 @@ export const BoardHeader = () => {
     setIsPaused(true);
   }, [setIsPaused]);
 
-  const onChangeDifficulty = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChangeDifficulty = useCallback((e: SelectChangeEvent) => {
     changeDifficulty(e.target.value as Difficulty, timeRef.current)
   }, [changeDifficulty])
 
@@ -97,19 +100,29 @@ export const BoardHeader = () => {
   }, [resetBoard])
 
   return (
-    <div className="w-full h-[50px]">
-      <div className="flex justify-center">
-        <select onChange={onChangeDifficulty}>
-          <option>easy</option>
-          <option>medium</option>
-          <option>hard</option>
-        </select>
-        {parseSeconds(timer)}
-        <button className="w-10 h-10 bg-yellow-300" onClick={onClickPause}>PAUSE</button>
-        <button className="w-10 h-10 bg-green-300 ml-4" onClick={onClickSolve}>SOLVE IT</button>
-        <button className="w-10 h-10 bg-purple-300 ml-4" onClick={onClickSolveCandidates}>SUGGEST IT</button>
-        <button className="w-10 h-10 bg-red-300 ml-4" onClick={onClickNewBoard}>NEW BOARD</button>
-        <button className="w-10 h-10 bg-blue-300 ml-4" onClick={onClickResetBoard}>RESET BOARD</button>
+    <div className="w-full border-t-2 border-b-2 padding-4 mb-4">
+      <div className="flex justify-between">
+        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+          <InputLabel id="select-difficulty-label">Difficulty</InputLabel>
+          <Select
+            labelId="select-difficulty-label"
+            id="select-difficulty"
+            value={difficulty}
+            label="Difficulty"
+            onChange={onChangeDifficulty}
+          >
+            <MenuItem value={'easy'}>Easy</MenuItem>
+            <MenuItem value={'medium'}>Medium</MenuItem>
+            <MenuItem value={'hard'}>Hard</MenuItem>
+          </Select>
+        </FormControl>
+        <div className="flex items-center gap-2">
+          {parseSeconds(timer)}
+          <IconButton aria-label="pause" size="small" onClick={onClickPause}>
+            <PauseIcon fontSize="inherit" />
+          </IconButton>
+        </div>
+        <ActionMenu />
       </div>
     </div>
   )

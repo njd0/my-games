@@ -1,5 +1,5 @@
 import { Board } from "./Board/BoardContext";
-import { BoardHeader } from "./Board/BoardHeader";
+import { BoardHeader } from "./Board/Header";
 import { BoardRenderer } from "./Board/BoardRenderer";
 
 export const Sudoku = () => {
